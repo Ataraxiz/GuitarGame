@@ -1,15 +1,8 @@
 import './App.css'
-import { NotePlayer } from './components'
+import { GuitarGame } from './components'
 
 function App() {
-  return (
-    <>
-      <h1>Guitar Game</h1>
-      <div className="card">
-        <NotePlayer />
-      </div>
-    </>
-  )
+  return <GuitarGame />
 }
 
 export default App

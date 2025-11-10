@@ -1,0 +1,1 @@
+export { basicExercise } from './basicExercise'

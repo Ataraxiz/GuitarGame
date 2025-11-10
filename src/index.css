@@ -15,19 +15,23 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #006969;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #008888;
+  /* Lighter teal for link hover */
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: radial-gradient(circle at top, rgba(0, 105, 105, 0.18), transparent 55%), #242424;
+}
+
+main {
+  display: block;
 }
 
 h1 {
@@ -47,7 +51,8 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #004040;
+  /* Main teal color for general button hover */
 }
 button:focus,
 button:focus-visible {
@@ -59,8 +64,12 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+  body {
+    background: radial-gradient(circle at top, rgba(0, 105, 105, 0.12), transparent 55%), #ffffff;
+  }
   a:hover {
-    color: #747bff;
+    color: #008888;
+    /* Lighter teal for link hover in light mode */
   }
   button {
     background-color: #f9f9f9;
