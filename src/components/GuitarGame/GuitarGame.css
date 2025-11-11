@@ -43,16 +43,22 @@
   background: linear-gradient(135deg, rgba(0, 105, 105, 0.2), rgba(0, 105, 105, 0.05));
   border: 2px solid #006969;
   border-radius: 16px;
-  padding: 1.5rem 1rem;
+  padding: 1.75rem 1.25rem;
   position: relative;
 }
 
 .track__inner {
   position: relative;
-  height: 260px;
+  height: 320px;
   background: rgba(0, 105, 105, 0.08);
   border-radius: 12px;
   overflow: hidden;
+}
+
+.track__content {
+  position: absolute;
+  inset: 0;
+  padding: 1.5rem 1.4rem;
 }
 
 .hit-line {
@@ -75,38 +81,43 @@
 .track__string-grid {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 0.75rem 0;
   pointer-events: none;
 }
 
-.track__string-row {
-  position: relative;
-  flex: 1;
-  border-top: 1px solid rgba(0, 105, 105, 0.4);
-}
-
-.track__string-row:last-of-type {
-  border-bottom: 1px solid rgba(0, 105, 105, 0.4);
-}
-
-.track__string-label {
+.track__string-line {
   position: absolute;
-  left: 0.5rem;
-  top: -0.75rem;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(0, 64, 64, 0.6);
-  padding: 0.1rem 0.4rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  transform: translateY(-50%);
+}
+
+.track__string-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
   border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 105, 105, 0.45);
+  box-shadow: 0 2px 5px rgba(0, 64, 64, 0.35);
+}
+
+.track__string-wire {
+  flex: 1;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(55, 241, 241, 0.3);
 }
 
 .track__notes-layer {
   position: absolute;
   inset: 0;
-  padding-inline-start: calc(12% + 0.5rem);
 }
 
 .note-token {
@@ -336,17 +347,14 @@
     background: rgba(0, 105, 105, 0.06);
   }
 
-  .track__string-row {
-    border-top-color: rgba(0, 105, 105, 0.25);
-  }
-
-  .track__string-row:last-of-type {
-    border-bottom-color: rgba(0, 105, 105, 0.25);
-  }
-
-  .track__string-label {
+  .track__string-badge {
     color: #004949;
-    background: rgba(0, 105, 105, 0.15);
+    background: rgba(0, 105, 105, 0.18);
+    box-shadow: 0 1px 3px rgba(0, 105, 105, 0.25);
+  }
+
+  .track__string-wire {
+    background: rgba(0, 105, 105, 0.28);
   }
 
   .note-token {
@@ -421,7 +429,11 @@
   }
 
   .track__inner {
-    height: 220px;
+    height: 260px;
+  }
+
+  .track__content {
+    padding: 1.25rem 1.2rem;
   }
 
   .note-token {
@@ -436,7 +448,11 @@
 
 @media (max-width: 520px) {
   .track__inner {
-    height: 200px;
+    height: 220px;
+  }
+
+  .track__content {
+    padding: 1rem 1rem;
   }
 
   .note-token {

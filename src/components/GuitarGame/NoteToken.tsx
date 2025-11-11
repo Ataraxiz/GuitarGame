@@ -3,14 +3,18 @@ import type { NotePreview } from '../../types/note'
 export interface NoteTokenProps {
   note: NotePreview
   totalStrings: number
+  marginRatio?: number
 }
 
-export function NoteToken({ note, totalStrings }: NoteTokenProps) {
+export function NoteToken({ note, totalStrings, marginRatio = 0 }: NoteTokenProps) {
   const horizontalPosition = `${note.position * 100}%`
 
-  const verticalPosition = note.stringIndex === null
-    ? '50%'
-    : `${(note.stringIndex / Math.max(totalStrings - 1, 1)) * 100}%`
+  const ratio = note.stringIndex === null
+    ? 0.5
+    : (note.stringIndex + 0.5) / totalStrings
+  const span = 1 - marginRatio * 2
+  const verticalPercent = (marginRatio + ratio * span) * 100
+  const verticalPosition = `${verticalPercent}%`
 
   const fretLabel = note.fret === null ? '—' : note.fret === 0 ? 'Open' : `Fret ${note.fret}`
   const className = note.isActive ? 'note-token note-token--active' : 'note-token'

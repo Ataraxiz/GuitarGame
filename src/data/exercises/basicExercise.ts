@@ -42,6 +42,6 @@ export const basicExercise: ExerciseDefinition = {
   id: 'basic-ascending-open-fifths',
   name: 'Ascending Fifths (Open to Low E)',
   totalBeats: 8,
-  leadInBeats: 0,
+  leadInBeats: 4,
   notes,
 }

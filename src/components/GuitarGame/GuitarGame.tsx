@@ -9,9 +9,9 @@ import { basicExercise } from '../../data/exercises'
 import type { ExerciseDefinition } from '../../data/exercises/basicExercise'
 import { useTransport } from '../../hooks/useTransport'
 
-const VIEW_LEAD_IN_BEATS = 4
-const VIEW_TAIL_BEATS = 1.5
-const ACTIVE_THRESHOLD_BEATS = 0.125
+const VIEW_LEAD_IN_BEATS = 6
+const VIEW_TAIL_BEATS = 2
+const ACTIVE_THRESHOLD_BEATS = 0.05
 
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value))
 
@@ -36,11 +36,11 @@ const beatsToTransportPosition = (beats: number): string => {
 const mapExerciseToStaticPreview = (
   exercise: ExerciseDefinition,
 ): NotePreview[] => {
-  const { notes, totalBeats, leadInBeats = 0 } = exercise
-  const denominator = Math.max(totalBeats + leadInBeats, 1)
+  const { notes, totalBeats } = exercise
+  const denominator = Math.max(totalBeats, 1)
 
   return notes.map((note: ExerciseNote) => {
-    const beatsFromStart = note.entryBeat + leadInBeats
+    const beatsFromStart = note.entryBeat
     const rawPosition = beatsFromStart / denominator
 
     return {
@@ -59,6 +59,9 @@ const mapExerciseToAnimatedPreview = (
   currentBeat: number,
 ) => {
   const leadInBeats = exercise.leadInBeats ?? 0
+  const windowLead = VIEW_LEAD_IN_BEATS
+  const windowTail = VIEW_TAIL_BEATS
+
   let hasActiveNote = false
 
   const notes = exercise.notes
@@ -66,15 +69,15 @@ const mapExerciseToAnimatedPreview = (
       const targetBeat = note.entryBeat + leadInBeats
       const distanceToHit = targetBeat - currentBeat
 
-      if (distanceToHit > VIEW_LEAD_IN_BEATS) {
+      if (distanceToHit > windowLead) {
         return null
       }
 
-      if (distanceToHit < -VIEW_TAIL_BEATS) {
+      if (distanceToHit < -windowTail) {
         return null
       }
 
-      const position = distanceToHit / VIEW_LEAD_IN_BEATS
+      const position = distanceToHit / windowLead
       const isActive = Math.abs(distanceToHit) <= ACTIVE_THRESHOLD_BEATS
 
       if (isActive) {
@@ -102,6 +105,22 @@ export function GuitarGame() {
   const { tempo, setTempo, isRunning, position, start, stop } = useTransport({
     initialTempo: 90,
   })
+
+  const synthRef = useRef<Tone.Synth | null>(null)
+
+  useEffect(() => {
+    const synth = new Tone.Synth({
+      oscillator: { type: 'triangle' },
+      envelope: { release: 0.2, attack: 0.01, decay: 0.1, sustain: 0.6 },
+    }).toDestination()
+
+    synthRef.current = synth
+
+    return () => {
+      synth.dispose()
+      synthRef.current = null
+    }
+  }, [])
 
   const staticPreview = useMemo(
     () => mapExerciseToStaticPreview(exercise),
@@ -134,19 +153,14 @@ export function GuitarGame() {
       const transportPosition = beatsToTransportPosition(beatsFromStart)
 
       const eventId = Tone.Transport.schedule((time) => {
-        console.log(
-          `%c[Transport]%c Play ${note.label} at beat ${note.entryBeat.toFixed(2)}`,
-          'color:#006969;font-weight:bold;',
-          'color:inherit;',
-          { transportTime: time },
-        )
+        synthRef.current?.triggerAttackRelease(note.label, '8n', time)
       }, transportPosition)
 
       eventIds.push(eventId)
     })
 
     scheduledEventIds.current = eventIds
-    Tone.Transport.position = 0
+    Tone.Transport.position = beatsToTransportPosition(0)
     setCurrentBeat(0)
   }, [clearScheduledEvents, exercise])
 
@@ -194,7 +208,7 @@ export function GuitarGame() {
 
   const handleStop = useCallback(() => {
     stop()
-    Tone.Transport.position = 0
+    Tone.Transport.position = beatsToTransportPosition(0)
     setCurrentBeat(0)
   }, [stop])
 
