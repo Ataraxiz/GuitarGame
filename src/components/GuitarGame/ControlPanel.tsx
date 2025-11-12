@@ -3,7 +3,6 @@ import type { ReactNode, ChangeEvent } from 'react'
 export interface ControlPanelProps {
   tempo: number
   isRunning: boolean
-  position: string
   onTempoChange: (nextTempo: number) => void
   onStart: () => Promise<void>
   onStop: () => void
@@ -17,7 +16,6 @@ export interface ControlPanelProps {
 export function ControlPanel({
   tempo,
   isRunning,
-  position,
   onTempoChange,
   onStart,
   onStop,
@@ -53,11 +51,6 @@ export function ControlPanel({
       </div>
 
       <div className="control-panel__details">
-        <div className="control-panel__stat">
-          <span className="control-panel__stat-label">Current Position</span>
-          <span className="control-panel__stat-value">{position}</span>
-        </div>
-
         <div className="control-panel__tempo">
           <span className="control-panel__stat-label">Tempo</span>
           <div className="control-panel__tempo-controls">
@@ -102,13 +95,7 @@ export function ControlPanel({
         </button>
       </div>
 
-      <div className="control-panel__extras">
-        <h3 className="control-panel__subheading">Audio Test</h3>
-        <p className="control-panel__helper">
-          Use the button below to confirm your audio setup before starting a session.
-        </p>
-        {children}
-      </div>
+      {children}
     </section>
   )
 }

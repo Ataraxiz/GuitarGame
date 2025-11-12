@@ -1,3 +1,4 @@
+import { useCallback, useLayoutEffect, useRef } from 'react'
 import type { NotePreview } from '../../types/note'
 import { HitLine } from './HitLine'
 import { NoteToken } from './NoteToken'
@@ -18,10 +19,54 @@ export interface TrackProps {
    */
   notes: NotePreview[]
   hasActiveNote?: boolean
+  hitLinePercent: number
+  onNoteMetricsChange?: (metrics: { noteWidthPercent: number }) => void
 }
 
-export function Track({ notes, hasActiveNote = false }: TrackProps) {
+export function Track({
+  notes,
+  hasActiveNote = false,
+  hitLinePercent,
+  onNoteMetricsChange,
+}: TrackProps) {
   const totalStrings = STRING_NAMES.length
+  const notesLayerRef = useRef<HTMLDivElement>(null)
+
+  const reportMetrics = useCallback(() => {
+    if (!onNoteMetricsChange) return
+    const layer = notesLayerRef.current
+    if (!layer) return
+
+    const sampleNote = layer.querySelector<HTMLElement>('.note-token')
+    if (!sampleNote) return
+
+    const layerRect = layer.getBoundingClientRect()
+    const noteRect = sampleNote.getBoundingClientRect()
+    if (layerRect.width === 0) return
+
+    const percent = (noteRect.width / layerRect.width) * 100
+    onNoteMetricsChange({ noteWidthPercent: percent })
+  }, [onNoteMetricsChange])
+
+  useLayoutEffect(() => {
+    reportMetrics()
+  }, [reportMetrics, notes.length])
+
+  useLayoutEffect(() => {
+    if (!onNoteMetricsChange) return
+    const layer = notesLayerRef.current
+    if (!layer) return
+
+    const observer = new ResizeObserver(() => {
+      reportMetrics()
+    })
+
+    observer.observe(layer)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [onNoteMetricsChange, reportMetrics])
 
   return (
     <div className="track" role="presentation">
@@ -42,7 +87,7 @@ export function Track({ notes, hasActiveNote = false }: TrackProps) {
             ))}
           </div>
 
-          <div className="track__notes-layer">
+          <div className="track__notes-layer" ref={notesLayerRef}>
             {notes.map((note) => {
               const key = note.id ?? `${note.label}-${note.stringIndex ?? 'x'}-${note.fret ?? 'x'}`
               return (
@@ -51,6 +96,7 @@ export function Track({ notes, hasActiveNote = false }: TrackProps) {
                   note={note}
                   totalStrings={totalStrings}
                   marginRatio={STRING_MARGIN_RATIO}
+                  hitLinePercent={hitLinePercent}
                 />
               )
             })}

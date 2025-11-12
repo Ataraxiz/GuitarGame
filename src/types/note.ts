@@ -42,6 +42,8 @@ export interface ExerciseNote {
  * - position: Relative horizontal position in the track (0 = at hit line, 1 = far right).
  * - isActive: Optional flag for when the note is crossing the hit line (used for
  *   glow/highlight animations).
+ * - distanceToHit: Optional beat distance from the note’s leading edge to the hit
+ *   line (negative once it has passed). Useful for styling.
  */
 export interface NotePreview {
   id?: string
@@ -50,4 +52,5 @@ export interface NotePreview {
   fret: number | null
   position: number
   isActive?: boolean
+  distanceToHit?: number
 }
